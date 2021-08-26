@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chinese Speaking Practice!</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        font-size: 20px;
+        font-family: "Noto Sans SC", sans-serif;
+      }
+      .container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border: 1px solid;
+      }
+      .button-container {
+          display: inline-flex;
+      }
+    </style>
+  </head>
+  <body onload="init()">
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/annyang/2.6.0/annyang.min.js"></script>
+    <script>
+      function init() {
+        let phrases = [
+          "传说",
+          "军队",
+          "赶路",
+          "士兵",
+          "继续",
+          "马",
+          "远方",
+          "突然",
+          "大喊",
+          "片",
+          "梅子",
+          "树林",
+          "可口",
+          "精神",
+          "心理安慰",
+          "空闲",
+        ]
+
+        if (!annyang) {
+          return
+        }
+        const continueButton = document.getElementById("continue")
+        const againButton = document.getElementById("again")
+        const resultElement = document.getElementById("result")
+        const judgementElement = document.getElementById("judgement")
+        const phraseElement = document.getElementById("phrase")
+
+        continueButton.style.display = "none"
+        againButton.style.display = "none"
+
+        let randomIndex = Math.floor(Math.random() * phrases.length)
+
+        let phrase = phrases[randomIndex]
+        phraseElement.innerText = phrase
+
+        againButton.onclick = function () {
+          resultElement.innerHTML = ""
+          judgementElement.innerHTML = ""
+          annyang.start()
+        }
+
+        continueButton.onclick = function () {
+          let randomIndex = Math.round(Math.random() * phrases.length)
+
+          let phrase = phrases[randomIndex]
+          phraseElement.innerText = phrase
+          annyang.removeCallback()
+          refreshCallback(phrase)
+          resultElement.innerHTML = ""
+          judgementElement.innerHTML = ""
+          annyang.start()
+        }
+
+        // Add Commands
+        annyang.setLanguage("zh-CN")
+        refreshCallback(phrase)
+
+        function refreshCallback(phrase) {
+          annyang.addCallback("result", function (phrases) {
+            if (phrases.includes(phrase)) {
+              resultElement.innerText = phrase
+              resultElement.style.color = "green"
+              judgementElement.innerText = "GOOD JOB!"
+            } else {
+              resultElement.innerText = phrases[0]
+              resultElement.style.color = "red"
+              judgementElement.innerText = "Oops. Try again!"
+            }
+            annyang.abort()
+            continueButton.style.display = "block"
+            againButton.style.display = "block"
+          })
+        }
+
+        // Start listening
+        annyang.start()
+      }
+    </script>
+    <h1>Repeat the phrase you see below</h1>
+    <div class="container">
+      <div class="child">
+        <div>Please say: <span id="phrase"></span></div>
+        <div>You said: <span id="result"></span></div>
+        <div id="judgement"></div>
+        <div class="button-container">
+          <button id="again">Try again</button>
+          <button id="continue">Next word</button>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
