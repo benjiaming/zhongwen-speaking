@@ -71,6 +71,7 @@
 
         const continueButton = document.getElementById("continue")
         const againButton = document.getElementById("again")
+        const playButton = document.getElementById("play")
         const resultElement = document.getElementById("result")
         const judgementElement = document.getElementById("judgement")
         const phraseElement = document.getElementById("phrase")
@@ -88,7 +89,10 @@
 
         againButton.disabled = true
 
+        let preferredLanguage = "zh-CN"
+
         let currentDeck, keys, randomIndex, phrase
+        const synth = window.speechSynthesis
 
         let selectedDeck = document.getElementById("decks").value
         fetchDeck(selectedDeck).then(() => {
@@ -130,6 +134,14 @@
 
         continueButton.onclick = nextPhrase
 
+        playButton.onclick = function () {
+          const utterThis = new SpeechSynthesisUtterance(phrase)
+          const myLang = utterThis.lang
+          utterThis.lang = preferredLanguage
+
+          synth.speak(utterThis)
+        }
+
         function nextPhrase() {
           randomIndex = Math.floor(Math.random() * keys.length)
           phrase = keys[randomIndex]
@@ -151,10 +163,9 @@
 
         function setLanguage(selectedDeck) {
           if (selectedDeck.includes("japanese")) {
-            annyang.setLanguage("ja")
-          } else {
-            annyang.setLanguage("zh-CN")
+            preferredLanguage = "ja-JP"
           }
+          annyang.setLanguage(preferredLanguage)
         }
         function refreshCallback(expectedPhrase) {
           annyang.addCallback("result", function (actualPhrases) {
@@ -232,15 +243,15 @@
           if (!diffs) {
             return expectedPronunciation
           }
-          console.log({diffs});
+          console.log({ diffs })
           return ""
         }
       }
     </script>
 
-    <h1 id="header">Repeat the phrase you see below</h1>
     <div class="container">
       <div class="child">
+        <h1 id="header">Pronunciation Trainer</h1>
         <div>
           <label for="decks">Select deck: </label>
           <select name="decks" id="decks">
@@ -268,7 +279,9 @@
           <label for="show_translation">Show translations: </label>
           <input type="checkbox" id="show_translation" checked />
         </div>
-        <div class="please-say">Please say: <span id="phrase"></span></div>
+        <div class="please-say">
+          Please say out loud this phrase: <span id="phrase"></span>
+        </div>
         <div id="translation_container">
           Translation: <span id="translation"></span>
         </div>
@@ -278,13 +291,30 @@
           Score: 👍: <span id="right">0</span> 👎<span id="wrong">0</span>
         </div>
         <div class="button-container">
-          <button id="again">Try again!</button>&nbsp;
-          <button id="continue">Next phrase</button>
+          <button id="again">🔁 Try again!</button>&nbsp;
+          <button id="continue">⏭️ Next phrase</button>&nbsp;
+          <button id="play">🔈 Play this phrase</button>
         </div>
       </div>
     </div>
     <p>
       <small>
+        Instructions:
+        <ul>
+          <li>Select a deck to study and speak out loud the phrase on the screen.</li>
+          <li>Currently supported languages are Mandarin Chinese and Japanese.</li>
+        </ul>
+
+        Disclaimer:
+        <p>
+          <ul>
+            <li>This tool only works on Google Chrome (desktop and mobile) and Edge.</li>
+            <li>The text to speech and the speech recognition engines are not perfect - especially as the phrase gets more complex.</li>
+            <li>Just because you get thumbs up doesn’t mean your pronunciation is perfect (since speech recognition is meant to be forgiving).</li>
+            <li>A perfect pronunciation doesn’t guarantee you get thumbs up.</li>
+            <li>Some of the decks contain a mixture of simplified and traditional characters. This confuses the speech recognition engine so you may not be able to get thumbs up even with a perfect pronunciation.</li>
+          </ul>
+        </p>
         Sources:
         <ul>
           <li>
