@@ -1,4 +1,4 @@
-Practice your spoken Chinese!
+Practice your spoken Chinese! (or Japanese, German or Czech).
 
 Original code: https://benjiaming.github.io/zhongwen/
 
